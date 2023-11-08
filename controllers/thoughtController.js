@@ -66,7 +66,44 @@ module.exports = {
       const thought = await Thought.create(req.body);
       const user = await User.findOne({ _id: req.body.userId });
       user.thoughts.push(thought._id);
-      user.save();
+      await user.save();
+
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  // update an existing thought
+  async updateThought(req, res) {
+    try {
+      // find user in body, might have been updated
+      const user = await User.findOne({ _id: req.body.userId });
+      if (!user) {
+        return res.status(404).json({ message: 'No user found with that ID' });
+      }
+
+      // find old thought and delete it
+      const oldThought = await Thought.findOneAndDelete({
+        _id: req.params.thoughtId,
+      });
+
+      // remove old thought from user
+      await User.findOneAndUpdate(
+        { _id: oldThought.userId },
+        { $pull: { thoughts: req.params.thoughtId } },
+        { runValidators: true, new: true },
+      );
+
+      // create new thought
+      const thought = await Thought.create(req.body);
+      user.thoughts.push(thought._id);
+      await user.save();
+
+      if (!thought) {
+        return res
+          .status(404)
+          .json({ message: 'No thought found with that ID :(' });
+      }
 
       res.json(thought);
     } catch (err) {
