@@ -1,5 +1,5 @@
 // const { ObjectId } = require('mongoose').Types;
-const { Thought } = require('../models');
+const { Thought, User } = require('../models');
 
 // Aggregate function to get the number of thoughts overall
 // const headCount = async () => {
@@ -60,11 +60,15 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  // create a new user
+  // create a new thought
   async createThought(req, res) {
     try {
-      const user = await Thought.create(req.body);
-      res.json(user);
+      const thought = await Thought.create(req.body);
+      const user = await User.findOne({ _id: req.body.userId });
+      user.thoughts.push(thought._id);
+      user.save();
+
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
