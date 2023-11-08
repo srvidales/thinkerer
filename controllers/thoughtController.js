@@ -73,33 +73,35 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  //   // Delete a thought and remove them from the course
-  //   async deletethought(req, res) {
-  //     try {
-  //       const thought = await thought.findOneAndRemove({ _id: req.params.thoughtId });
+  // Delete a thought and remove it from the user
+  async deleteThought(req, res) {
+    try {
+      const thought = await Thought.findOneAndDelete({
+        _id: req.params.thoughtId,
+      });
 
-  //       if (!thought) {
-  //         return res.status(404).json({ message: 'No such thought exists' });
-  //       }
+      if (!thought) {
+        return res.status(404).json({ message: 'No such thought exists' });
+      }
 
-  //       const course = await Course.findOneAndUpdate(
-  //         { thoughts: req.params.thoughtId },
-  //         { $pull: { thoughts: req.params.thoughtId } },
-  //         { new: true }
-  //       );
+      const user = await User.findOneAndUpdate(
+        { _id: thought.userId },
+        { $pull: { thoughts: req.params.thoughtId } },
+        { runValidators: true, new: true },
+      );
 
-  //       if (!course) {
-  //         return res.status(404).json({
-  //           message: 'thought deleted, but no courses found',
-  //         });
-  //       }
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID :(' });
+      }
 
-  //       res.json({ message: 'thought successfully deleted' });
-  //     } catch (err) {
-  //       console.log(err);
-  //       res.status(500).json(err);
-  //     }
-  //   },
+      res.json({ message: 'Thought successfully deleted' });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  },
 
   //   // Add an assignment to a thought
   //   async addAssignment(req, res) {
