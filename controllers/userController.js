@@ -59,15 +59,15 @@ module.exports = {
   //       return res.status(500).json(err);
   //     }
   //   },
-  //   // create a new student
-  //   async createStudent(req, res) {
-  //     try {
-  //       const student = await Student.create(req.body);
-  //       res.json(student);
-  //     } catch (err) {
-  //       res.status(500).json(err);
-  //     }
-  //   },
+  // create a new user
+  async createUser(req, res) {
+    try {
+      const user = await User.create(req.body);
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
   //   // Delete a student and remove them from the course
   //   async deleteStudent(req, res) {
   //     try {
