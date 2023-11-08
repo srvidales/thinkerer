@@ -76,36 +76,43 @@ module.exports = {
   // update an existing thought
   async updateThought(req, res) {
     try {
-      // find user in body, might have been updated
-      const user = await User.findOne({ _id: req.body.userId });
-      if (!user) {
-        return res.status(404).json({ message: 'No user found with that ID' });
+      // findOne existing thought
+      const thought = await Thought.findOne({ _id: req.params.thoughtId });
+      // check thought.userId against req.body.userId
+      if (thought.userId.toString() !== req.body.userId) {
+        // if they dont match, remove from previous user and add to new user
+        const prevUser = await User.findOneAndUpdate(
+          { _id: thought.userId },
+          { $pull: { thoughts: req.params.thoughtId } },
+          { runValidators: true, new: true },
+        );
+
+        if (!prevUser) {
+          return res
+            .status(404)
+            .json({ message: 'No user found with that ID :(' });
+        }
+
+        const newUser = await User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $addToSet: { thoughts: req.params.thoughtId } },
+          { runValidators: true, new: true },
+        );
+
+        if (!newUser) {
+          return res
+            .status(404)
+            .json({ message: 'No user found with that ID :(' });
+        }
       }
-
-      // find old thought and delete it
-      const oldThought = await Thought.findOneAndDelete({
-        _id: req.params.thoughtId,
-      });
-
-      // remove old thought from user
-      await User.findOneAndUpdate(
-        { _id: oldThought.userId },
-        { $pull: { thoughts: req.params.thoughtId } },
+      // update thought
+      const updatedThought = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        req.body,
         { runValidators: true, new: true },
       );
 
-      // create new thought
-      const thought = await Thought.create(req.body);
-      user.thoughts.push(thought._id);
-      await user.save();
-
-      if (!thought) {
-        return res
-          .status(404)
-          .json({ message: 'No thought found with that ID :(' });
-      }
-
-      res.json(thought);
+      res.json(updatedThought);
     } catch (err) {
       res.status(500).json(err);
     }
