@@ -146,48 +146,44 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  // Add a reaction to a thought
+  async addReaction(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $addToSet: { reactions: req.body } },
+        { runValidators: true, new: true },
+      );
 
-  //   // Add an assignment to a thought
-  //   async addAssignment(req, res) {
-  //     console.log('You are adding an assignment');
-  //     console.log(req.body);
+      if (!thought) {
+        return res
+          .status(404)
+          .json({ message: 'No thought found with that ID :(' });
+      }
 
-  //     try {
-  //       const thought = await thought.findOneAndUpdate(
-  //         { _id: req.params.thoughtId },
-  //         { $addToSet: { assignments: req.body } },
-  //         { runValidators: true, new: true }
-  //       );
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  // Remove reaction from a thought
+  async removeReaction(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { runValidators: true, new: true },
+      );
 
-  //       if (!thought) {
-  //         return res
-  //           .status(404)
-  //           .json({ message: 'No thought found with that ID :(' });
-  //       }
+      if (!thought) {
+        return res
+          .status(404)
+          .json({ message: 'No thought found with that ID :(' });
+      }
 
-  //       res.json(thought);
-  //     } catch (err) {
-  //       res.status(500).json(err);
-  //     }
-  //   },
-  //   // Remove assignment from a thought
-  //   async removeAssignment(req, res) {
-  //     try {
-  //       const thought = await thought.findOneAndUpdate(
-  //         { _id: req.params.thoughtId },
-  //         { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
-  //         { runValidators: true, new: true }
-  //       );
-
-  //       if (!thought) {
-  //         return res
-  //           .status(404)
-  //           .json({ message: 'No thought found with that ID :(' });
-  //       }
-
-  //       res.json(thought);
-  //     } catch (err) {
-  //       res.status(500).json(err);
-  //     }
-  //   },
+      res.json(thought);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
