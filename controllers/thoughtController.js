@@ -76,43 +76,18 @@ module.exports = {
   // update an existing thought
   async updateThought(req, res) {
     try {
-      // findOne existing thought
-      const thought = await Thought.findOne({ _id: req.params.thoughtId });
-      // check thought.userId against req.body.userId
-      if (thought.userId.toString() !== req.body.userId) {
-        // if they dont match, remove from previous user and add to new user
-        const prevUser = await User.findOneAndUpdate(
-          { _id: thought.userId },
-          { $pull: { thoughts: req.params.thoughtId } },
-          { runValidators: true, new: true },
-        );
+      const thought = await Thought.findOneAndUpdate({
+        _id: req.params.thoughtId,
+      });
 
-        if (!prevUser) {
-          return res
-            .status(404)
-            .json({ message: 'No user found with that ID :(' });
-        }
-
-        const newUser = await User.findOneAndUpdate(
-          { _id: req.body.userId },
-          { $addToSet: { thoughts: req.params.thoughtId } },
-          { runValidators: true, new: true },
-        );
-
-        if (!newUser) {
-          return res
-            .status(404)
-            .json({ message: 'No user found with that ID :(' });
-        }
+      if (!thought) {
+        return res.status(404).json({ message: 'No such thought exists' });
       }
-      // update thought
-      const updatedThought = await Thought.findOneAndUpdate(
-        { _id: req.params.thoughtId },
-        req.body,
-        { runValidators: true, new: true },
-      );
 
-      res.json(updatedThought);
+      thought.thoughtText = req.body.thoughtText;
+      await thought.save();
+
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
