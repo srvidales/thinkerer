@@ -1,3 +1,4 @@
+Start Server
 POST User A
 POST User B
 GET All Users - Show all users displayed.
@@ -14,3 +15,4 @@ DELETE User B reaction - Show reaction gone.
 DELETE User A friend - Show friend gone.
 DELETE User A thought A1 - Show thought gone.
 DELETE User A - Show user gone.
+DELETE User B - Show user and associated thoughts gone.
