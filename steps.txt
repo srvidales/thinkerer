@@ -1,0 +1,6 @@
+GET routes to return all users and all thoughts.
+GET routes to return single user and a single thought.
+POST, PUT and DELETE routes for all users.
+POST, PUT and DELETE routes for thoughts.
+POST and DELETE for user's fiend list.
+POST and DELETE for reactions to thoughts.
