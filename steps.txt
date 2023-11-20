@@ -1,6 +1,16 @@
-GET routes to return all users and all thoughts.
-GET routes to return single user and a single thought.
-POST, PUT and DELETE routes for all users.
-POST, PUT and DELETE routes for thoughts.
-POST and DELETE for user's fiend list.
-POST and DELETE for reactions to thoughts.
+POST User A
+POST User B
+GET All Users - Show all users displayed.
+GET User A by ID - Show one user displayed.
+POST User A Thought A1
+POST User B Thought B1
+GET All Thoughts - Show all thoughts displayed.
+GET Thought A1 by ID - Show one thought displayed.
+PUT User A - Show updated user.
+PUT Thought A1 - Show updated thought.
+POST User A friend User B - Show updated friend.
+POST User B reaction to User A Thought A1 - Show new reaction.
+DELETE User B reaction - Show reaction gone.
+DELETE User A friend - Show friend gone.
+DELETE User A thought A1 - Show thought gone.
+DELETE User A - Show user gone.
